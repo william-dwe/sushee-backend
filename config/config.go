@@ -77,7 +77,7 @@ func initConfig() AppConfig {
 			User:     getENV("DB_USER", ""),
 			Password: getENV("DB_PASSWORD", ""),
 			DBName:   getENV("DB_NAME", ""),
-			Port:     getENV("DB_PORT", ""),
+			Port:     getENV("DB_PORT", "5432"),
 		},
 		AuthConfig: authConfig{
 			TimeLimitAccessToken:   getENV("ACCESS_TOKEN_EXPIRATION", "900"),
@@ -85,12 +85,12 @@ func initConfig() AppConfig {
 			HmacSecretAccessToken:  getENV("HMAC_SECRET_ACCESS_TOKEN", ""),
 			HmacSecretRefreshToken: getENV("HMAC_SECRET_REFRESH_TOKEN", ""),
 		},
-		CloudinaryConfig: cloudinaryConfig{
-			CloudName: getENV("CLOUDINARY_CLOUD_NAME", ""),
-			APIKey:    getENV("CLOUDINARY_API_KEY", ""),
-			APISecret: getENV("CLOUDINARY_API_SECRET", ""),
-			Folder:    getENV("CLOUDINARY_PPROFILE_DIR", ""),
-		},
+		// CloudinaryConfig: cloudinaryConfig{
+		// 	CloudName: getENV("CLOUDINARY_CLOUD_NAME", ""),
+		// 	APIKey:    getENV("CLOUDINARY_API_KEY", ""),
+		// 	APISecret: getENV("CLOUDINARY_API_SECRET", ""),
+		// 	Folder:    getENV("CLOUDINARY_PPROFILE_DIR", ""),
+		// },
 	}
 }
 
