@@ -40,6 +40,7 @@ type cloudinaryConfig struct {
 	Folder    string
 }
 type AppConfig struct {
+	AppName          string
 	ENVConfig        envConfig
 	DBConfig         dbConfig
 	AuthConfig       authConfig
@@ -66,6 +67,7 @@ func initConfig() AppConfig {
 	initEnv()
 
 	return AppConfig{
+		AppName: getENV("APP_NAME", "sushee"),
 		ENVConfig: envConfig{
 			Mode:       getENV("APP_ENV_MODE", ENV_MODE_TEST),
 			LoggerMode: getENV("LOGGER_ENV_MODE", ENV_MODE_TEST),

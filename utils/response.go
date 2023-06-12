@@ -54,3 +54,7 @@ func ResponseErrorJSON(c *gin.Context, err any) {
 	serverErr := httperror.InternalServerError("Internal Error")
 	c.AbortWithStatusJSON(serverErr.StatusCode, serverErr)
 }
+
+func AbortWithError(c *gin.Context, err httperror.AppError) {
+	c.AbortWithStatusJSON(err.StatusCode, err)
+}
