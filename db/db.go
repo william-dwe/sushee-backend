@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"final-project-backend/config"
+	"sushee-backend/config"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -19,7 +19,7 @@ var (
 
 func getLogger() logger.Interface {
 	recover()
-	if c.GormLogMode == config.ENV_MODE_RELEASE {
+	if config.Config.ENVConfig.LoggerMode != config.Config.ENVConfig.Mode {
 		return nil
 	}
 	return logger.New(

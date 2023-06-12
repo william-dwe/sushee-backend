@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -11,6 +12,11 @@ const (
 	ENV_MODE_TEST    = "test"
 	ENV_MODE_RELEASE = "release"
 )
+
+type envConfig struct {
+	Mode       string
+	LoggerMode string
+}
 
 type dbConfig struct {
 	Host     string
@@ -25,7 +31,6 @@ type authConfig struct {
 	TimeLimitRefreshToken  string
 	HmacSecretAccessToken  string
 	HmacSecretRefreshToken string
-	IsTesting              string
 }
 
 type cloudinaryConfig struct {
@@ -35,6 +40,7 @@ type cloudinaryConfig struct {
 	Folder    string
 }
 type AppConfig struct {
+	ENVConfig        envConfig
 	DBConfig         dbConfig
 	AuthConfig       authConfig
 	CloudinaryConfig cloudinaryConfig
@@ -51,7 +57,7 @@ func getENV(key, defaultVal string) string {
 func initEnv() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Error().Msg("Error loading .env file with these error details:\n", err)
+		log.Error().Msg(fmt.Sprintf("Error loading .env file with these error details:\n%s", err))
 	}
 	log.Info().Msg(".env file Loaded")
 }
@@ -60,6 +66,10 @@ func initConfig() AppConfig {
 	initEnv()
 
 	return AppConfig{
+		ENVConfig: envConfig{
+			Mode:       getENV("APP_ENV_MODE", ENV_MODE_TEST),
+			LoggerMode: getENV("LOGGER_ENV_MODE", ENV_MODE_TEST),
+		},
 		DBConfig: dbConfig{
 			Host:     getENV("DB_HOST", ""),
 			User:     getENV("DB_USER", ""),
@@ -72,7 +82,6 @@ func initConfig() AppConfig {
 			TimeLimitRefreshToken:  getENV("REFRESH_TOKEN_EXPIRATION", "86400"),
 			HmacSecretAccessToken:  getENV("HMAC_SECRET_ACCESS_TOKEN", ""),
 			HmacSecretRefreshToken: getENV("HMAC_SECRET_REFRESH_TOKEN", ""),
-			IsTesting:              getENV("IS_TESTING", "true"),
 		},
 		CloudinaryConfig: cloudinaryConfig{
 			CloudName: getENV("CLOUDINARY_CLOUD_NAME", ""),
