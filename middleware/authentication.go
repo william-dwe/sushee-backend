@@ -33,7 +33,7 @@ func Authenticate(c *gin.Context) {
 	}
 
 	userJson, _ := json.Marshal(claims["user"])
-	var userPayload entity.AccessTokenPayload
+	var userPayload entity.AuthTokenPayload
 	err = json.Unmarshal(userJson, &userPayload)
 	if err != nil {
 		utils.AbortWithError(c, httperror.UnauthorizedError())

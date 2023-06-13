@@ -22,7 +22,7 @@ func (h *Handler) ExampleHandler(c *gin.Context) {
 		return
 	}
 
-	response := utils.ResponseStruct{
+	response := dto.ResponseStruct{
 		Code:    "SUCCEED_EXAMPLE_HANDLER",
 		Message: "Success",
 		Data:    res,

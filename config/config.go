@@ -13,6 +13,11 @@ const (
 	ENV_MODE_RELEASE = "release"
 )
 
+type appConfig struct {
+	Name string
+	Url  string
+}
+
 type envConfig struct {
 	Mode       string
 	LoggerMode string
@@ -40,7 +45,7 @@ type cloudinaryConfig struct {
 	Folder    string
 }
 type AppConfig struct {
-	AppName          string
+	AppConfig        appConfig
 	ENVConfig        envConfig
 	DBConfig         dbConfig
 	AuthConfig       authConfig
@@ -67,17 +72,20 @@ func initConfig() AppConfig {
 	initEnv()
 
 	return AppConfig{
-		AppName: getENV("APP_NAME", "sushee"),
+		AppConfig: appConfig{
+			Name: getENV("APP_NAME", "sushee"),
+			Url:  getENV("APP_URL", "127.0.0.1"),
+		},
 		ENVConfig: envConfig{
 			Mode:       getENV("APP_ENV_MODE", ENV_MODE_TEST),
 			LoggerMode: getENV("LOGGER_ENV_MODE", ENV_MODE_TEST),
 		},
 		DBConfig: dbConfig{
-			Host:     getENV("DB_HOST", ""),
-			User:     getENV("DB_USER", ""),
-			Password: getENV("DB_PASSWORD", ""),
-			DBName:   getENV("DB_NAME", ""),
-			Port:     getENV("DB_PORT", "5432"),
+			Host:     getENV("CONF_DB_HOST", ""),
+			User:     getENV("CONF_DB_USER", ""),
+			Password: getENV("CONF_DB_PASSWORD", ""),
+			DBName:   getENV("CONF_DB_NAME", ""),
+			Port:     getENV("CONF_DB_PORT", ""),
 		},
 		AuthConfig: authConfig{
 			TimeLimitAccessToken:   getENV("ACCESS_TOKEN_EXPIRATION", "900"),
