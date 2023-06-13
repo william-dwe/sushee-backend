@@ -4,17 +4,12 @@ import (
 	"net/http"
 	"reflect"
 
+	"sushee-backend/dto"
 	"sushee-backend/httperror"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 )
-
-type ResponseStruct struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
-	Data    any    `json:"data"`
-}
 
 func ResponseSuccessJSONData(c *gin.Context, data any) {
 	c.JSON(http.StatusOK, gin.H{
@@ -22,7 +17,7 @@ func ResponseSuccessJSONData(c *gin.Context, data any) {
 	})
 }
 
-func ResponseSuccessJSON(c *gin.Context, data ResponseStruct) {
+func ResponseSuccessJSON(c *gin.Context, data dto.ResponseStruct) {
 	c.JSON(http.StatusOK, data)
 }
 

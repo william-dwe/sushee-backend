@@ -3,6 +3,7 @@ package server
 import (
 	"sushee-backend/handler"
 	"sushee-backend/httperror"
+	"sushee-backend/middleware"
 	"sushee-backend/usecase"
 	"sushee-backend/utils"
 
@@ -11,14 +12,20 @@ import (
 
 type RouterConfig struct {
 	ExampleUsecase usecase.ExampleUsecase
+	UserUsecase    usecase.UserUsecase
+	AuthUsecase    usecase.AuthUsecase
+	AuthUtil       utils.AuthUtil
 }
 
 func CreateRouter(c RouterConfig) *gin.Engine {
 	r := gin.Default()
-	// r.Use(middleware.JSONifyResult())
+	r.Use(middleware.ErrorHandler)
 
 	h := handler.New(handler.HandlerConfig{
 		ExampleUsecase: c.ExampleUsecase,
+		UserUsecase:    c.UserUsecase,
+		AuthUsecase:    c.AuthUsecase,
+		AuthUtil:       c.AuthUtil,
 	})
 
 	r.NoRoute(func(c *gin.Context) {
@@ -33,6 +40,19 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 
 	v1.POST("/example-process", h.ExampleHandler)
 	v1.POST("/example-process-error", h.ExampleHandlerErrorMiddleware)
+
+	v1.POST("/login", h.Login)
+	v1.POST("/register", h.Register)
+
+	a := v1.Group("/")
+	a.Use(middleware.Authenticate)
+
+	a.POST("/logout", h.Logout)
+	a.POST("/refresh", h.Refresh)
+
+	user := a.Group("/users")
+	user.GET("/me", h.ShowUserDetail)
+	user.POST("/me", h.UpdateUserProfile)
 
 	return r
 }

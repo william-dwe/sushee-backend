@@ -13,6 +13,11 @@ const (
 	ENV_MODE_RELEASE = "release"
 )
 
+type appConfig struct {
+	Name string
+	Url  string
+}
+
 type envConfig struct {
 	Mode       string
 	LoggerMode string
@@ -33,18 +38,17 @@ type authConfig struct {
 	HmacSecretRefreshToken string
 }
 
-type cloudinaryConfig struct {
-	CloudName string
-	APIKey    string
-	APISecret string
-	Folder    string
+type gcsConfig struct {
+	ProjectID  string
+	Bucket     string
+	UploadPath string
 }
 type AppConfig struct {
-	AppName          string
-	ENVConfig        envConfig
-	DBConfig         dbConfig
-	AuthConfig       authConfig
-	CloudinaryConfig cloudinaryConfig
+	AppConfig  appConfig
+	ENVConfig  envConfig
+	DBConfig   dbConfig
+	AuthConfig authConfig
+	GCSConfig  gcsConfig
 }
 
 func getENV(key, defaultVal string) string {
@@ -67,17 +71,20 @@ func initConfig() AppConfig {
 	initEnv()
 
 	return AppConfig{
-		AppName: getENV("APP_NAME", "sushee"),
+		AppConfig: appConfig{
+			Name: getENV("APP_NAME", "sushee"),
+			Url:  getENV("APP_URL", "127.0.0.1"),
+		},
 		ENVConfig: envConfig{
 			Mode:       getENV("APP_ENV_MODE", ENV_MODE_TEST),
 			LoggerMode: getENV("LOGGER_ENV_MODE", ENV_MODE_TEST),
 		},
 		DBConfig: dbConfig{
-			Host:     getENV("DB_HOST", ""),
-			User:     getENV("DB_USER", ""),
-			Password: getENV("DB_PASSWORD", ""),
-			DBName:   getENV("DB_NAME", ""),
-			Port:     getENV("DB_PORT", ""),
+			Host:     getENV("CONF_DB_HOST", ""),
+			User:     getENV("CONF_DB_USER", ""),
+			Password: getENV("CONF_DB_PASSWORD", ""),
+			DBName:   getENV("CONF_DB_NAME", ""),
+			Port:     getENV("CONF_DB_PORT", ""),
 		},
 		AuthConfig: authConfig{
 			TimeLimitAccessToken:   getENV("ACCESS_TOKEN_EXPIRATION", "900"),
@@ -85,11 +92,10 @@ func initConfig() AppConfig {
 			HmacSecretAccessToken:  getENV("HMAC_SECRET_ACCESS_TOKEN", ""),
 			HmacSecretRefreshToken: getENV("HMAC_SECRET_REFRESH_TOKEN", ""),
 		},
-		CloudinaryConfig: cloudinaryConfig{
-			CloudName: getENV("CLOUDINARY_CLOUD_NAME", ""),
-			APIKey:    getENV("CLOUDINARY_API_KEY", ""),
-			APISecret: getENV("CLOUDINARY_API_SECRET", ""),
-			Folder:    getENV("CLOUDINARY_PPROFILE_DIR", ""),
+		GCSConfig: gcsConfig{
+			ProjectID:  getENV("GCS_PROJECT_ID", ""),
+			Bucket:     getENV("GCS_BUCKET", ""),
+			UploadPath: getENV("GCS_UPLOAD_PATH", ""),
 		},
 	}
 }

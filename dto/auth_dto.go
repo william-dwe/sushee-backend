@@ -1,51 +1,37 @@
 package dto
 
-const ACTION_FORGET_PASSWORD = "forget_password"
-const ACTION_CHANGE_PASSWORD = "change_password"
-
-const (
-	SMTP_CHANGE_PASS_SENDER_NAME = "Blanche"
-	SMTP_CHANGE_PASS_SUBJECT     = "Blanche - Change Password Verification Code"
-	SMTP_CHANGE_PASS_HTML_PATH   = "template/email/change_password.html"
-	SMTP_FORGOT_PASS_SENDER_NAME = "Blanche"
-	SMTP_FORGOT_PASS_SUBJECT     = "Blanche - Forgot Password"
-	SMTP_FORGOT_PASS_HTML_PATH   = "template/email/forget_password.html"
+import (
+	"time"
 )
 
-type ChangePasswordRequestVerificationCodeResDTO struct {
-	IsEmailSent bool   `json:"is_email_sent"`
-	Email       string `json:"email"`
-	Username    string `json:"username"`
-	RetryIn     int    `json:"retry_in"`
+type UserLoginReqBody struct {
+	Identifier string `json:"identifier" binding:"required"`
+	Password   string `json:"password" binding:"required"`
 }
-type ChangePasswordVerificationCodeReqDTO struct {
-	VerificationCode string `json:"verification_code" binding:"required"`
-}
-type ChangePasswordVerificationCodeResDTO struct {
-	Username    string `json:"username"`
+type UserLoginResBody struct {
 	AccessToken string `json:"access_token"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
 }
 
-type ForgetPasswordRequestVerificationCodeReqDTO struct {
-	Email string `json:"email"`
-}
-type ForgetPasswordRequestVerificationCodeResDTO struct {
-	IsEmailSent bool   `json:"is_email_sent"`
-	Email       string `json:"email"`
-	Username    string `json:"username"`
-	RetryIn     int    `json:"retry_in"`
-}
-type ForgetPasswordVerificationCodeReqDTO struct {
-	VerificationCode string `json:"verification_code" binding:"required"`
-}
-type ForgetPasswordVerificationCodeResDTO struct {
-	AccessToken string `json:"access_token"`
-}
-
-type ResetPasswordReqBody struct {
+type UserRegisterReqBody struct {
+	FullName string `json:"full_name" binding:"required"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email" binding:"required"`
+	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
+type UserRegisterResBody struct {
+	FullName       string    `json:"full_name"`
+	Phone          string    `json:"phone"`
+	Email          string    `json:"email"`
+	Username       string    `json:"username"`
+	RegisterDate   time.Time `json:"register_date"`
+	ProfilePicture string    `json:"profile_picture"`
+	RoleId         int       `json:"role_id"`
+}
 
-type ResetPasswordResBody struct {
+type UserLogoutResBody struct {
 	Username string `json:"username"`
+	Email    string `json:"email"`
 }

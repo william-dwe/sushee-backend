@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math/rand"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -21,6 +22,7 @@ type AuthUtil interface {
 	GenerateAccessToken(username string, scope string) (string, error)
 	ValidateToken(encodedToken, signSecret string) (*jwt.Token, error)
 	GenerateVerificationCode() (string, error)
+	EmbedTokenOnContextCookie(c *gin.Context, refreshToken *string, accessToken *string, isUserLoggedIn *bool, appUrl string)
 }
 
 type authUtilImpl struct{}
@@ -32,8 +34,8 @@ func NewAuthUtil() AuthUtil {
 var c = config.Config.AuthConfig
 
 type customAccessTokenClaims struct {
-	User  entity.AccessTokenPayload `json:"user"`
-	Scope string                    `json:"scope"`
+	User  entity.AuthTokenPayload `json:"user"`
+	Scope string                  `json:"scope"`
 	jwt.RegisteredClaims
 }
 
@@ -47,14 +49,14 @@ func (a *authUtilImpl) GenerateAccessToken(username string, scope string) (strin
 func taylorAccessToken(username, scope string) *jwt.Token {
 	expirationLimit, _ := strconv.ParseInt(c.TimeLimitAccessToken, 10, 64)
 	claims := &customAccessTokenClaims{
-		entity.AccessTokenPayload{
+		entity.AuthTokenPayload{
 			Username: username,
 		},
 		scope,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(expirationLimit))),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Issuer:    config.Config.AppName,
+			Issuer:    config.Config.AppConfig.Name,
 		},
 	}
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -77,7 +79,7 @@ func taylorRefreshToken() *jwt.Token {
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(expirationLimit))),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Issuer:    config.Config.AppName,
+			Issuer:    config.Config.AppConfig.Name,
 		},
 	}
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -92,7 +94,7 @@ func (a *authUtilImpl) ValidateToken(encodedToken, signSecret string) (*jwt.Toke
 	})
 }
 
-func GetUserJWTContext(c *gin.Context) (*entity.AccessTokenPayload, error) {
+func GetUserJWTContext(c *gin.Context) (*entity.AuthTokenPayload, error) {
 	user, ok := c.Get("user")
 	if !ok {
 		log.Error().Msg("Not loggedin, cannot get user by token")
@@ -101,13 +103,13 @@ func GetUserJWTContext(c *gin.Context) (*entity.AccessTokenPayload, error) {
 
 	userJson, _ := json.Marshal(user)
 
-	var userPayload entity.AccessTokenPayload
+	var userPayload entity.AuthTokenPayload
 	err := json.Unmarshal(userJson, &userPayload)
 	if err != nil {
 		return nil, httperror.UnauthorizedError()
 	}
 
-	userJWT := user.(entity.AccessTokenPayload)
+	userJWT := user.(entity.AuthTokenPayload)
 	return &userJWT, nil
 }
 
@@ -142,4 +144,80 @@ func (a *authUtilImpl) GenerateVerificationCode() (string, error) {
 	}
 
 	return string(buffer), nil
+}
+
+func (a *authUtilImpl) EmbedTokenOnContextCookie(c *gin.Context, refreshToken *string, accessToken *string, isUserLoggedIn *bool, appUrl string) {
+	refreshTokenExpLimit, _ := strconv.Atoi(config.Config.AuthConfig.TimeLimitRefreshToken)
+	accessTokenExpLimit, _ := strconv.Atoi(config.Config.AuthConfig.TimeLimitAccessToken)
+	isRelease := config.Config.ENVConfig.Mode == config.ENV_MODE_RELEASE
+	if isRelease {
+		c.SetSameSite(http.SameSiteNoneMode)
+	}
+	if refreshToken != nil {
+		c.SetCookie(
+			"refresh_token",
+			*refreshToken,
+			refreshTokenExpLimit*60,
+			"/",
+			appUrl,
+			isRelease,
+			true,
+		)
+		if *refreshToken == "" {
+			c.SetCookie(
+				"refresh_token",
+				"",
+				-1,
+				"/",
+				appUrl,
+				isRelease,
+				true,
+			)
+		}
+	}
+	if accessToken != nil {
+		c.SetCookie(
+			"access_token",
+			*accessToken,
+			accessTokenExpLimit*60,
+			"/",
+			appUrl,
+			isRelease,
+			true,
+		)
+		if *accessToken == "" {
+			c.SetCookie(
+				"access_token",
+				"",
+				-1,
+				"/",
+				appUrl,
+				isRelease,
+				true,
+			)
+		}
+	}
+
+	if isUserLoggedIn != nil {
+		c.SetCookie(
+			"is_user_logged_in",
+			strconv.FormatBool(*isUserLoggedIn),
+			refreshTokenExpLimit*60,
+			"/",
+			appUrl,
+			true,
+			false,
+		)
+		if !*isUserLoggedIn {
+			c.SetCookie(
+				"is_user_logged_in",
+				"",
+				-1,
+				"/",
+				appUrl,
+				true,
+				false,
+			)
+		}
+	}
 }
