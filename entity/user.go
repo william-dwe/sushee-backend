@@ -14,7 +14,7 @@ type User struct {
 	Username       string
 	Password       string
 	RegisterDate   time.Time
-	ProfilePicture string
+	ProfilePicture *string
 	PlayAttempt    int
 	RoleId         int
 }

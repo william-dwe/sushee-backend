@@ -31,14 +31,14 @@ func NewAuthRepository(c AuthRepositoryConfig) AuthRepository {
 func (r *authRepositoryImpl) AddAuthSession(s *entity.AuthSession) (*entity.AuthSession, error) {
 	err := r.db.Create(&s).Error
 	if err != nil {
-		err = utils.PgConsErrMasker(
+		mErr := utils.PgConsErrMasker(
 			err,
 			entity.ConstraintErrMaskerMap{
 				"auth_sesssions_user_id_fkey": domain.ErrAuthRepoAddAuthSessionUserNotFound,
 			},
 			domain.ErrAuthRepoInternal,
 		)
-		return nil, err
+		return nil, mErr
 	}
 	return s, err
 }
@@ -59,20 +59,20 @@ func (r *authRepositoryImpl) GetAuthSessionByRefreshToken(t string) (*entity.Aut
 }
 
 func (r *authRepositoryImpl) DeleteAuthSessionById(id uint) error {
-	err := r.db.Delete(&id).Error
+	err := r.db.Where("id = ?", id).Delete(&entity.AuthSession{}).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return domain.ErrAuthRepoAddAuthSessionUserNotFound
 		}
 
-		err = utils.PgConsErrMasker(
+		mErr := utils.PgConsErrMasker(
 			err,
 			entity.ConstraintErrMaskerMap{
 				"auth_sesssions_user_id_fkey": domain.ErrAuthRepoAddAuthSessionUserNotFound,
 			},
 			domain.ErrAuthRepoInternal,
 		)
-		return err
+		return mErr
 	}
 	return nil
 }

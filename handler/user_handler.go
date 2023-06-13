@@ -9,9 +9,13 @@ import (
 )
 
 func (h *Handler) ShowUserDetail(c *gin.Context) {
-	username := c.GetString("username")
+	user, err := utils.GetUserJWTContext(c)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
 
-	userInfo, err := h.userUsecase.GetDetailUserByUsername(username)
+	userInfo, err := h.userUsecase.GetDetailUserByUsername(user.Username)
 	if err != nil {
 		_ = c.Error(err)
 		return
@@ -27,22 +31,19 @@ func (h *Handler) ShowUserDetail(c *gin.Context) {
 }
 
 func (h *Handler) UpdateUserProfile(c *gin.Context) {
-	username := c.GetString("username")
-	var formFile dto.UserProfileUploadReqBody
+	user, err := utils.GetUserJWTContext(c)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+	var reqBody dto.UserProfileReqBody
 
-	if err := c.ShouldBind(&formFile); err != nil {
+	if err := utils.ShouldBindWithValidation(c, &reqBody); err != nil {
 		_ = c.Error(domain.ErrUserHandlerUpdateIncompleteReqBody)
 		return
 	}
 
-	updateProfileReq := dto.UserEditDetailsReqBody{
-		FullName: formFile.FullName,
-		Phone:    formFile.Phone,
-		Email:    formFile.Email,
-		Password: formFile.Password,
-	}
-
-	userInfo, err := h.userUsecase.UpdateUserDetailsByUsername(username, updateProfileReq)
+	userInfo, err := h.userUsecase.UpdateUserDetailsByUsername(user.Username, reqBody)
 	if err != nil {
 		_ = c.Error(err)
 		return

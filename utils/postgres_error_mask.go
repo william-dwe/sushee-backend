@@ -14,7 +14,11 @@ func PgConsErrMasker(
 	finErr httperror.AppError,
 ) error {
 	if len(consErr) != 0 {
-		if errValue, ok := consErr[err.(*pgconn.PgError).ConstraintName]; ok {
+		assertedErr, ok := err.(*pgconn.PgError)
+		if !ok {
+			return finErr
+		}
+		if errValue, ok := consErr[assertedErr.ConstraintName]; ok {
 			return errValue
 		}
 		return finErr

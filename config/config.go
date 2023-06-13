@@ -38,18 +38,17 @@ type authConfig struct {
 	HmacSecretRefreshToken string
 }
 
-type cloudinaryConfig struct {
-	CloudName string
-	APIKey    string
-	APISecret string
-	Folder    string
+type gcsConfig struct {
+	ProjectID  string
+	Bucket     string
+	UploadPath string
 }
 type AppConfig struct {
-	AppConfig        appConfig
-	ENVConfig        envConfig
-	DBConfig         dbConfig
-	AuthConfig       authConfig
-	CloudinaryConfig cloudinaryConfig
+	AppConfig  appConfig
+	ENVConfig  envConfig
+	DBConfig   dbConfig
+	AuthConfig authConfig
+	GCSConfig  gcsConfig
 }
 
 func getENV(key, defaultVal string) string {
@@ -93,12 +92,11 @@ func initConfig() AppConfig {
 			HmacSecretAccessToken:  getENV("HMAC_SECRET_ACCESS_TOKEN", ""),
 			HmacSecretRefreshToken: getENV("HMAC_SECRET_REFRESH_TOKEN", ""),
 		},
-		// CloudinaryConfig: cloudinaryConfig{
-		// 	CloudName: getENV("CLOUDINARY_CLOUD_NAME", ""),
-		// 	APIKey:    getENV("CLOUDINARY_API_KEY", ""),
-		// 	APISecret: getENV("CLOUDINARY_API_SECRET", ""),
-		// 	Folder:    getENV("CLOUDINARY_PPROFILE_DIR", ""),
-		// },
+		GCSConfig: gcsConfig{
+			ProjectID:  getENV("GCS_PROJECT_ID", ""),
+			Bucket:     getENV("GCS_BUCKET", ""),
+			UploadPath: getENV("GCS_UPLOAD_PATH", ""),
+		},
 	}
 }
 

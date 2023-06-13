@@ -10,21 +10,24 @@ import (
 
 type UserUsecase interface {
 	GetDetailUserByUsername(accessToken string) (*dto.UserContext, error)
-	UpdateUserDetailsByUsername(username string, updatePremises dto.UserEditDetailsReqBody) (*dto.UserContext, error)
+	UpdateUserDetailsByUsername(username string, reqBody dto.UserProfileReqBody) (*dto.UserContext, error)
 	GetDetailRole(roleId int) (*entity.Role, error)
 }
 
 type userUsecaseImpl struct {
 	userRepository repository.UserRepository
+	mediaUsecase   MediaUsecase
 }
 
 type UserUsecaseConfig struct {
 	UserRepository repository.UserRepository
+	MediaUsecase   MediaUsecase
 }
 
 func NewUserUsecase(c UserUsecaseConfig) UserUsecase {
 	return &userUsecaseImpl{
 		userRepository: c.UserRepository,
+		mediaUsecase:   c.MediaUsecase,
 	}
 }
 
@@ -39,7 +42,7 @@ func (u *userUsecaseImpl) GetDetailUserByUsername(username string) (*dto.UserCon
 		FullName:       user.FullName,
 		Email:          user.Email,
 		Phone:          user.Phone,
-		ProfilePicture: user.ProfilePicture,
+		ProfilePicture: *user.ProfilePicture,
 		PlayAttempt:    user.PlayAttempt,
 		RoleId:         user.RoleId,
 	}
@@ -47,7 +50,7 @@ func (u *userUsecaseImpl) GetDetailUserByUsername(username string) (*dto.UserCon
 	return &userContext, nil
 }
 
-func (u *userUsecaseImpl) UpdateUserDetailsByUsername(username string, reqBody dto.UserEditDetailsReqBody) (*dto.UserContext, error) {
+func (u *userUsecaseImpl) UpdateUserDetailsByUsername(username string, reqBody dto.UserProfileReqBody) (*dto.UserContext, error) {
 	var err error
 
 	hashedPass := ""
@@ -55,23 +58,19 @@ func (u *userUsecaseImpl) UpdateUserDetailsByUsername(username string, reqBody d
 		hashedPass, _ = utils.HashAndSalt(reqBody.Password)
 	}
 
-	// TODO: upload image + embed image here
-	// var uploadUrl string
-	// var err error
-	// if formFile.Img != nil {
-	// 	uploadUrl, err = utils.NewMediaUpload().FileUpload(username, formFile)
-	// 	if err != nil {
-	// 		_ = c.Error(err)
-	// 		return
-	// 	}
-	// }
-
 	newUser := entity.User{
-		FullName:       reqBody.FullName,
-		Phone:          reqBody.Phone,
-		Email:          reqBody.Email,
-		Password:       hashedPass,
-		ProfilePicture: reqBody.ProfilePicture,
+		FullName: reqBody.FullName,
+		Phone:    reqBody.Phone,
+		Email:    reqBody.Email,
+		Password: hashedPass,
+	}
+
+	if reqBody.ProfilePicture != nil {
+		url, err := u.mediaUsecase.UploadFileForBinding(*reqBody.ProfilePicture, "profile_picture:"+username)
+		if err != nil {
+			return nil, err
+		}
+		newUser.ProfilePicture = &url
 	}
 
 	user, err := u.userRepository.UpdateUserDetailsByUsername(username, &newUser)
@@ -84,7 +83,7 @@ func (u *userUsecaseImpl) UpdateUserDetailsByUsername(username string, reqBody d
 		FullName:       user.FullName,
 		Email:          user.Email,
 		Phone:          user.Phone,
-		ProfilePicture: user.ProfilePicture,
+		ProfilePicture: *user.ProfilePicture,
 		PlayAttempt:    user.PlayAttempt,
 		RoleId:         user.RoleId,
 	}

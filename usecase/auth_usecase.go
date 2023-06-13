@@ -57,7 +57,7 @@ func (u *authUsecaseImpl) Register(reqBody *dto.UserRegisterReqBody) (*dto.UserR
 		Username:       reqBody.Username,
 		Password:       hashedPass,
 		RegisterDate:   time.Now(),
-		ProfilePicture: initialProfilePicture,
+		ProfilePicture: &initialProfilePicture,
 		PlayAttempt:    initialPlayAttempt,
 		RoleId:         defaultRoleId,
 	}

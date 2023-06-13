@@ -12,6 +12,12 @@ import (
 )
 
 func initRouter() *gin.Engine {
+	authUtil := utils.NewAuthUtil()
+	clientUploader := utils.NewClientUploader()
+	gcsUtil := utils.NewGCSUploader(utils.GCSUploaderConfig{
+		ClientUploader: clientUploader,
+	})
+
 	exampleRepo := repository.NewExampleRepository(repository.ExampleRepositoryConfig{
 		DB: db.Get(),
 	})
@@ -25,11 +31,14 @@ func initRouter() *gin.Engine {
 	exampleUsecase := usecase.NewExampleUsecase(usecase.ExampleUsecaseConfig{
 		ExampleRepository: exampleRepo,
 	})
+	mediaUsecase := usecase.NewMediaUsecase(usecase.MediaUsecaseConfig{
+		GCSUploader: gcsUtil,
+	})
 	userUsecase := usecase.NewUserUsecase(usecase.UserUsecaseConfig{
 		UserRepository: userRepo,
+		MediaUsecase:   mediaUsecase,
 	})
 
-	authUtil := utils.NewAuthUtil()
 	authUsecase := usecase.NewAuthUsecase(usecase.AuthUsecaseConfig{
 		AuthRepository: authRepo,
 		UserRepository: userRepo,

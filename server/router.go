@@ -44,9 +44,15 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 	v1.POST("/login", h.Login)
 	v1.POST("/register", h.Register)
 
-	authorized := v1.Group("/")
-	authorized.POST("/logout", h.Logout)
-	authorized.POST("/refresh", h.Refresh)
+	a := v1.Group("/")
+	a.Use(middleware.Authenticate)
+
+	a.POST("/logout", h.Logout)
+	a.POST("/refresh", h.Refresh)
+
+	user := a.Group("/users")
+	user.GET("/me", h.ShowUserDetail)
+	user.POST("/me", h.UpdateUserProfile)
 
 	return r
 }
