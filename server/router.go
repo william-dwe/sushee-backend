@@ -14,6 +14,7 @@ type RouterConfig struct {
 	ExampleUsecase usecase.ExampleUsecase
 	UserUsecase    usecase.UserUsecase
 	AuthUsecase    usecase.AuthUsecase
+	MenuUsecase    usecase.MenuUsecase
 	AuthUtil       utils.AuthUtil
 }
 
@@ -25,6 +26,7 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 		ExampleUsecase: c.ExampleUsecase,
 		UserUsecase:    c.UserUsecase,
 		AuthUsecase:    c.AuthUsecase,
+		MenuUsecase:    c.MenuUsecase,
 		AuthUtil:       c.AuthUtil,
 	})
 
@@ -37,14 +39,17 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 
 	apiEndpoint := r.Group("/api")
 	v1 := apiEndpoint.Group("/v1")
+	selectedVersion := v1.Group("")
 
-	v1.POST("/example-process", h.ExampleHandler)
-	v1.POST("/example-process-error", h.ExampleHandlerErrorMiddleware)
+	selectedVersion.POST("/example-process", h.ExampleHandler)
+	selectedVersion.POST("/example-process-error", h.ExampleHandlerErrorMiddleware)
 
-	v1.POST("/login", h.Login)
-	v1.POST("/register", h.Register)
+	selectedVersion.POST("/login", h.Login)
+	selectedVersion.POST("/register", h.Register)
+	selectedVersion.GET("/menus", h.ShowMenu)
+	selectedVersion.GET("/promotions", h.ShowPromotion)
 
-	a := v1.Group("/")
+	a := selectedVersion.Group("/")
 	a.Use(middleware.Authenticate)
 
 	a.POST("/logout", h.Logout)
