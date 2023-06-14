@@ -11,11 +11,13 @@ import (
 )
 
 type RouterConfig struct {
-	ExampleUsecase usecase.ExampleUsecase
-	UserUsecase    usecase.UserUsecase
-	AuthUsecase    usecase.AuthUsecase
-	MenuUsecase    usecase.MenuUsecase
-	AuthUtil       utils.AuthUtil
+	ExampleUsecase   usecase.ExampleUsecase
+	UserUsecase      usecase.UserUsecase
+	AuthUsecase      usecase.AuthUsecase
+	MenuUsecase      usecase.MenuUsecase
+	PromotionUsecase usecase.PromotionUsecase
+	CartUsecase      usecase.CartUsecase
+	AuthUtil         utils.AuthUtil
 }
 
 func CreateRouter(c RouterConfig) *gin.Engine {
@@ -23,11 +25,13 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 	r.Use(middleware.ErrorHandler)
 
 	h := handler.New(handler.HandlerConfig{
-		ExampleUsecase: c.ExampleUsecase,
-		UserUsecase:    c.UserUsecase,
-		AuthUsecase:    c.AuthUsecase,
-		MenuUsecase:    c.MenuUsecase,
-		AuthUtil:       c.AuthUtil,
+		ExampleUsecase:   c.ExampleUsecase,
+		UserUsecase:      c.UserUsecase,
+		AuthUsecase:      c.AuthUsecase,
+		MenuUsecase:      c.MenuUsecase,
+		PromotionUsecase: c.PromotionUsecase,
+		CartUsecase:      c.CartUsecase,
+		AuthUtil:         c.AuthUtil,
 	})
 
 	r.NoRoute(func(c *gin.Context) {
@@ -58,6 +62,13 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 	user := a.Group("/users")
 	user.GET("/me", h.ShowUserDetail)
 	user.POST("/me", h.UpdateUserProfile)
+
+	carts := a.Group("/carts")
+	carts.GET("", h.ShowCart)
+	carts.POST("", h.AddCart)
+	carts.POST("/:cartId", h.UpdateCartById)
+	carts.DELETE("", h.DeleteCarts)
+	carts.DELETE("/:cartId", h.DeleteCartById)
 
 	return r
 }

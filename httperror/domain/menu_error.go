@@ -8,7 +8,9 @@ var ErrMenuRepoPromotionNotFound = httperror.BadRequestError("Promotion not foun
 var ErrMenuRepoMenuNotFound = httperror.BadRequestError("Menu not found", "MENU_NOT_FOUND")
 var ErrMenuRepoNoMenuFound = httperror.BadRequestError("No menu found", "NO_MENU_FOUND")
 var ErrMenuRepoNoPromotionFound = httperror.BadRequestError("No promotion found", "NO_PROMOTION_FOUND")
+var ErrPromotionMenuRepoInvalidPromo = httperror.BadRequestError("Invalid promotion", "INVALID_PROMOTION")
 
+var ErrMenuUsecaseMarshallCustomizese = httperror.BadRequestError("Input customization in the correct format", "MARSHALL_CUSTOMIZESE_ERROR")
 var ErrMenuUsecaseUnmarshallCustomizese = httperror.BadRequestError("Unmarshall customizese error", "UNMARSHALL_CUSTOMIZESE_ERROR")
 
 var ErrMenuHandlerInvalidLimitRequest = httperror.BadRequestError("Invalid limit request", "INVALID_LIMIT_REQUEST")

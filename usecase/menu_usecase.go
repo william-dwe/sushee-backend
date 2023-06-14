@@ -10,7 +10,6 @@ import (
 
 type MenuUsecase interface {
 	GetMenu(q dto.MenuQuery) (*dto.MenusResBody, error)
-	GetPromotion() (*[]entity.Promotion, error)
 	AddMenu(reqBody *dto.MenuAddReqBody) (*entity.Menu, error)
 	UpdateMenuByMenuId(menuId int, m *entity.Menu) (*entity.Menu, error)
 	DeleteMenuByMenuId(menuId int) error
@@ -74,15 +73,6 @@ func (u *menuUsecaseImpl) GetMenu(q dto.MenuQuery) (*dto.MenusResBody, error) {
 	return &resBody, nil
 }
 
-func (u *menuUsecaseImpl) GetPromotion() (*[]entity.Promotion, error) {
-	menus, err := u.menuRepository.GetPromotionMenu()
-	if err != nil {
-		return nil, err
-	}
-
-	return menus, nil
-}
-
 func (u *menuUsecaseImpl) AddMenu(reqBody *dto.MenuAddReqBody) (*entity.Menu, error) {
 	newMenu := entity.Menu{
 		MenuName:      reqBody.MenuName,
@@ -90,6 +80,10 @@ func (u *menuUsecaseImpl) AddMenu(reqBody *dto.MenuAddReqBody) (*entity.Menu, er
 		MenuPhoto:     reqBody.MenuPhoto,
 		CategoryId:    reqBody.CategoryId,
 		Customization: reqBody.Customization,
+	}
+
+	if _, err := json.Marshal(newMenu.Customization); err != nil {
+		return nil, domain.ErrMenuUsecaseMarshallCustomizese
 	}
 
 	menu, err := u.menuRepository.AddMenu(&newMenu)

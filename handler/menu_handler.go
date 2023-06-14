@@ -47,7 +47,7 @@ func (h *Handler) ShowMenu(c *gin.Context) {
 }
 
 func (h *Handler) ShowPromotion(c *gin.Context) {
-	t, err := h.menuUsecase.GetPromotion()
+	t, err := h.promotionUsecase.GetPromotion()
 	if err != nil {
 		_ = c.Error(err)
 		return
