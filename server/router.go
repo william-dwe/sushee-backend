@@ -14,6 +14,7 @@ type RouterConfig struct {
 	ExampleUsecase usecase.ExampleUsecase
 	UserUsecase    usecase.UserUsecase
 	AuthUsecase    usecase.AuthUsecase
+	MenuUsecase    usecase.MenuUsecase
 	AuthUtil       utils.AuthUtil
 }
 
@@ -25,6 +26,7 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 		ExampleUsecase: c.ExampleUsecase,
 		UserUsecase:    c.UserUsecase,
 		AuthUsecase:    c.AuthUsecase,
+		MenuUsecase:    c.MenuUsecase,
 		AuthUtil:       c.AuthUtil,
 	})
 
@@ -40,6 +42,7 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 
 	v1.POST("/example-process", h.ExampleHandler)
 	v1.POST("/example-process-error", h.ExampleHandlerErrorMiddleware)
+	v1.GET("/menus", h.ShowMenu)
 
 	v1.POST("/login", h.Login)
 	v1.POST("/register", h.Register)

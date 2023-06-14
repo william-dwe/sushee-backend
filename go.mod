@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-playground/validator/v10 v10.14.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/jackc/pgtype v1.14.0
 	github.com/jackc/pgx/v5 v5.3.1
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/zerolog v1.29.1
@@ -33,6 +34,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.1 // indirect
+	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
