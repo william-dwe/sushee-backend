@@ -43,6 +43,7 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 	v1.POST("/example-process", h.ExampleHandler)
 	v1.POST("/example-process-error", h.ExampleHandlerErrorMiddleware)
 	v1.GET("/menus", h.ShowMenu)
+	v1.GET("/promotions", h.ShowPromotion)
 
 	v1.POST("/login", h.Login)
 	v1.POST("/register", h.Register)
