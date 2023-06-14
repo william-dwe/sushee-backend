@@ -39,16 +39,17 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 
 	apiEndpoint := r.Group("/api")
 	v1 := apiEndpoint.Group("/v1")
+	selectedVersion := v1.Group("")
 
-	v1.POST("/example-process", h.ExampleHandler)
-	v1.POST("/example-process-error", h.ExampleHandlerErrorMiddleware)
-	v1.GET("/menus", h.ShowMenu)
-	v1.GET("/promotions", h.ShowPromotion)
+	selectedVersion.POST("/example-process", h.ExampleHandler)
+	selectedVersion.POST("/example-process-error", h.ExampleHandlerErrorMiddleware)
 
-	v1.POST("/login", h.Login)
-	v1.POST("/register", h.Register)
+	selectedVersion.POST("/login", h.Login)
+	selectedVersion.POST("/register", h.Register)
+	selectedVersion.GET("/menus", h.ShowMenu)
+	selectedVersion.GET("/promotions", h.ShowPromotion)
 
-	a := v1.Group("/")
+	a := selectedVersion.Group("/")
 	a.Use(middleware.Authenticate)
 
 	a.POST("/logout", h.Logout)
