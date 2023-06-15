@@ -36,6 +36,18 @@ func initRouter() *gin.Engine {
 	cartRepo := repository.NewCartRepository(repository.CartRepositoryConfig{
 		DB: db.Get(),
 	})
+	couponRepo := repository.NewCouponRepository(repository.CouponRepositoryConfig{
+		DB: db.Get(),
+	})
+	orderRepo := repository.NewOrderRepository(repository.OrderRepositoryConfig{
+		DB: db.Get(),
+	})
+	paymentRepo := repository.NewPaymentRepository(repository.PaymentRepositoryConfig{
+		DB: db.Get(),
+	})
+	reviewRepo := repository.NewReviewRepository(repository.ReviewRepositoryConfig{
+		DB: db.Get(),
+	})
 
 	exampleUsecase := usecase.NewExampleUsecase(usecase.ExampleUsecaseConfig{
 		ExampleRepository: exampleRepo,
@@ -64,6 +76,20 @@ func initRouter() *gin.Engine {
 		MenuRepository:      menuRepo,
 		PromotionRepository: promotionRepo,
 	})
+	orderUsecase := usecase.NewOrderUsecase(usecase.OrderUsecaseConfig{
+		OrderRepository:  orderRepo,
+		UserRepository:   userRepo,
+		CartRepository:   cartRepo,
+		CouponRepository: couponRepo,
+	})
+	paymentUsecase := usecase.NewPaymentUsecase(usecase.PaymentUsecaseConfig{
+		PaymentRepository: paymentRepo,
+	})
+	reviewUsecase := usecase.NewReviewUsecase(usecase.ReviewUsecaseConfig{
+		ReviewRepository: reviewRepo,
+		UserRepository:   userRepo,
+		OrderRepository:  orderRepo,
+	})
 
 	r := CreateRouter(RouterConfig{
 		ExampleUsecase:   exampleUsecase,
@@ -72,6 +98,9 @@ func initRouter() *gin.Engine {
 		MenuUsecase:      menuUsecase,
 		PromotionUsecase: promotionUsecase,
 		CartUsecase:      cartUsecase,
+		OrderUsecase:     orderUsecase,
+		PaymentUsecase:   paymentUsecase,
+		ReviewUsecase:    reviewUsecase,
 		AuthUtil:         authUtil,
 	})
 	return r

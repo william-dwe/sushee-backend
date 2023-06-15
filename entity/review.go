@@ -16,9 +16,3 @@ type Review struct {
 	OrderedMenuId     int            `json:"ordered_menu_id"`
 	MenuId            int            `json:"menu_id"`
 }
-
-type ReviewAddReqBody struct {
-	ReviewDescription string  `json:"review_description"`
-	Rating            float64 `json:"rating"`
-	OrderedMenuId     int     `json:"ordered_menu_id"`
-}

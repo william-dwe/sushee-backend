@@ -17,6 +17,9 @@ type RouterConfig struct {
 	MenuUsecase      usecase.MenuUsecase
 	PromotionUsecase usecase.PromotionUsecase
 	CartUsecase      usecase.CartUsecase
+	OrderUsecase     usecase.OrderUsecase
+	PaymentUsecase   usecase.PaymentUsecase
+	ReviewUsecase    usecase.ReviewUsecase
 	AuthUtil         utils.AuthUtil
 }
 
@@ -31,6 +34,9 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 		MenuUsecase:      c.MenuUsecase,
 		PromotionUsecase: c.PromotionUsecase,
 		CartUsecase:      c.CartUsecase,
+		OrderUsecase:     c.OrderUsecase,
+		PaymentUsecase:   c.PaymentUsecase,
+		ReviewUsecase:    c.ReviewUsecase,
 		AuthUtil:         c.AuthUtil,
 	})
 
@@ -69,6 +75,12 @@ func CreateRouter(c RouterConfig) *gin.Engine {
 	carts.POST("/:cartId", h.UpdateCartById)
 	carts.DELETE("", h.DeleteCarts)
 	carts.DELETE("/:cartId", h.DeleteCartById)
+
+	orders := a.Group("/orders")
+	orders.GET("", h.GetOrders)
+	orders.POST("", h.AddOrder)
+	orders.GET("/payment", h.GetPaymentOption)
+	orders.POST("/reviews", h.AddReview)
 
 	return r
 }
