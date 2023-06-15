@@ -12,6 +12,9 @@ type Handler struct {
 	menuUsecase      usecase.MenuUsecase
 	promotionUsecase usecase.PromotionUsecase
 	cartUsecase      usecase.CartUsecase
+	orderUsecase     usecase.OrderUsecase
+	paymentUsecase   usecase.PaymentUsecase
+	reviewUsecase    usecase.ReviewUsecase
 	authUtils        utils.AuthUtil
 }
 
@@ -22,6 +25,9 @@ type HandlerConfig struct {
 	MenuUsecase      usecase.MenuUsecase
 	PromotionUsecase usecase.PromotionUsecase
 	CartUsecase      usecase.CartUsecase
+	OrderUsecase     usecase.OrderUsecase
+	PaymentUsecase   usecase.PaymentUsecase
+	ReviewUsecase    usecase.ReviewUsecase
 	AuthUtil         utils.AuthUtil
 }
 
@@ -33,6 +39,9 @@ func New(c HandlerConfig) *Handler {
 		menuUsecase:      c.MenuUsecase,
 		promotionUsecase: c.PromotionUsecase,
 		cartUsecase:      c.CartUsecase,
+		orderUsecase:     c.OrderUsecase,
+		paymentUsecase:   c.PaymentUsecase,
+		reviewUsecase:    c.ReviewUsecase,
 		authUtils:        c.AuthUtil,
 	}
 }
